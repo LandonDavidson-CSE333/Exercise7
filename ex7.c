@@ -115,6 +115,8 @@ void printFile(int fd, char* name) {
     close(fd);
     exit(EXIT_FAILURE);
   }
+  // Move cursor back to start of file
+  lseek(fd, 0, SEEK_SET);
 
   // Read size number of bytes into buf and store the number read
   char buf[size];
