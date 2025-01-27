@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   struct dirent *ep = readdir(dp);
   if (ep == NULL) {
     fprintf(stderr, "Given directory %s doesn't have any entries", argv[1]);
-    perror(": ");
+    perror(" in function main()");
     return EXIT_FAILURE;
   }
 
@@ -72,7 +72,7 @@ DIR* openDirectory(char* dirName) {
   DIR *dp = opendir(dirName);
   if (dp == NULL) {
     fprintf(stderr, "Couldn't open the given directory %s", dirName);
-    perror(": ");
+    perror(" in function openDirectory()");
     exit(EXIT_FAILURE);
   }
   return dp;
@@ -100,7 +100,7 @@ int openFile(char* file) {
     // Retry on an EINTR and return failure otherwise
     if (errno != EINTR) {
       fprintf(stderr, "File %s failed to open", file);
-      perror(": ");
+      perror(" in openFile()");
       exit(EXIT_FAILURE);
     }
     fd = open(file, O_RDONLY);
@@ -114,7 +114,7 @@ void printFile(int fd, char* name) {
   // Return failure if lseek failed
   if (size == -1) {
     fprintf(stderr, "Failed to find the size of the file %s", name);
-    perror(": ");
+    perror(" in function printFile()");
     close(fd);
     exit(EXIT_FAILURE);
   }
@@ -128,14 +128,14 @@ void printFile(int fd, char* name) {
   // On error return a failure
   if (bytesRead == -1) {
     fprintf(stderr, "Failed to read from file %s", name);
-    perror(": ");
+    perror(" in function printFile()");
     close(fd);
     exit(EXIT_FAILURE);
   }
   // return failure when read didn't read the whole file
   if (bytesRead != size) {
     fprintf(stderr, "couldn't read whole file %s", name);
-    perror(": ");
+    perror(" in function printFile()");
     close(fd);
     exit(EXIT_FAILURE);
   }
