@@ -10,7 +10,10 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-// Takes a directory name and returns a DIR* opened with POSIX opendir while handling errors
+#define NAME_BUFFER 1024
+
+// Takes a directory name and returns a DIR* opened with POSIX opendir
+// while handling errors
 DIR* openDirectory(char*);
 
 // Takes a string and returns true if it ends in .txt
@@ -19,7 +22,8 @@ bool isTextFile(char*);
 // Takes a file name and opens it using POSIX calls, returns file descriptor
 int openFile(char*);
 
-// Print the contents of the given file descriptor using POSIX read and handle errors
+// Print the contents of the given file descriptor using POSIX read
+// and handle errors
 void printFile(int, char*);
 
 int main(int argc, char** argv) {
@@ -31,36 +35,37 @@ int main(int argc, char** argv) {
 
   // Normalize directory name to end in a /
   size_t size = strlen(argv[1]);
+  char dirName[NAME_BUFFER];
+  sprintf(dirName, "%s", argv[1]);
   if (argv[1][size - 1] != '/') {
-
+    sprintf(&dirName[size], "/");
   }
 
   // Open given directory
-  DIR *dp = openDirectory(argv[1]);
+  DIR *dp = openDirectory(dirName);
 
   // Check that dp actually has entries in it
   struct dirent *ep = readdir(dp);
   if (ep == NULL) {
-    fprintf(stderr, "Given directory %s doesn't have any entries", argv[1]);
+    fprintf(stderr, "Given directory %s doesn't have any entries", dirName);
     perror(" in function main()");
     return EXIT_FAILURE;
   }
 
   // Loop through all entries ending in ".txt" and print to stdout
-  while((ep = readdir(dp)) != NULL) {
+  while ((ep = readdir(dp)) != NULL) {
     // Move to next entry if the file isn't a .txt
     if (!isTextFile(ep->d_name)) {
       continue;
     }
 
     // Open current file
-    char *filename = "";
-    strcat(filename, argv[1]);
-    strcat(filename, ep->d_name);
+    char filename[NAME_BUFFER + 255];
+    sprintf(filename, "%s%s", dirName, ep->d_name);
     int fd = openFile(filename);
 
     // Print the contents of the current file to standard out byte by byte
-    printFile(fd, argv[1]);
+    printFile(fd, dirName);
 
     // Close current file
     close(fd);
@@ -125,7 +130,7 @@ void printFile(int fd, char* name) {
   lseek(fd, 0, SEEK_SET);
 
   // Read whole file into buf
-  char buf[size];
+  char buf[NAME_BUFFER];
   long bytesRead = read(fd, buf, size);
 
   // On error return a failure
@@ -144,5 +149,5 @@ void printFile(int fd, char* name) {
   }
 
   // Print buf to stdout
-  printf(buf);
+  printf("%s", buf);
 }
