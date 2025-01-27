@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
   }
 
   // Loop through all entries ending in ".txt" and print to stdout
-  while(ep != NULL) {
+  while((ep = readdir(dp)) != NULL) {
     // Move to next entry if the file isn't a .txt
     if (!isTextFile(ep->d_name)) {
       continue;
@@ -53,9 +53,8 @@ int main(int argc, char** argv) {
     // Print the contents of the current file to standard out byte by byte
     printFile(fd, argv[1]);
 
-    // Close current file and move to the next
+    // Close current file
     close(fd);
-    ep = readdir(dp);
   }
   // Close the directory now that we are done and return a success
   closedir(dp);
@@ -80,11 +79,9 @@ bool isTextFile(char* src) {
   if (length < 4) {
     return false;
   }
-  // Copy the last four bytes and check they equal .txt
+  // Move pointer to the last four bytes and check it is .txt
   src = src + length - 4;
-  char* extension = "";
-  strcpy(extension, src);
-  if (strcmp(".txt", extension) == 0) {
+  if (strcmp(".txt", src) == 0) {
     return true;
   }
   return false;
@@ -118,7 +115,7 @@ void printFile(int fd, char* name) {
   // Move cursor back to start of file
   lseek(fd, 0, SEEK_SET);
 
-  // Read size number of bytes into buf and store the number read
+  // Read whole file into buf
   char buf[size];
   long bytesRead = read(fd, buf, size);
 
