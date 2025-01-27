@@ -29,6 +29,12 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  // Normalize directory name to end in a /
+  size_t size = strlen(argv[1]);
+  if (argv[1][size - 1] != '/') {
+
+  }
+
   // Open given directory
   DIR *dp = openDirectory(argv[1]);
 
@@ -48,7 +54,7 @@ int main(int argc, char** argv) {
     }
 
     // Open current file
-    int fd = openFile(ep->d_name);
+    int fd = openFile(strcat(argv[1], ep->d_name));
 
     // Print the contents of the current file to standard out byte by byte
     printFile(fd, argv[1]);
