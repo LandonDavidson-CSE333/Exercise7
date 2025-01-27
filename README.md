@@ -1,1 +1,2 @@
 # Exercise7
+This program takes a directory name (can be absolute or relative and have a trailing / or not) and prints out every .txt file under it (non-recursive). It uses direct POSIX calls to open, read, close, readdir, and opendir with all the appropriate error handling
