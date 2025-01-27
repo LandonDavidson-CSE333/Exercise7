@@ -128,14 +128,14 @@ void printFile(int fd, char* name) {
   // On error return a failure
   if (bytesRead == -1) {
     fprintf(stderr, "Failed to read from file %s", name);
-    perror("");
+    perror(": ");
     close(fd);
     exit(EXIT_FAILURE);
   }
   // return failure when read didn't read the whole file
   if (bytesRead != size) {
     fprintf(stderr, "couldn't read whole file %s", name);
-    perror("");
+    perror(": ");
     close(fd);
     exit(EXIT_FAILURE);
   }
