@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   struct dirent *ep = readdir(dp);
   if (ep == NULL) {
     fprintf(stderr, "Given directory %s doesn't have any entries", argv[1]);
-    perror("");
+    perror(": ");
     return EXIT_FAILURE;
   }
 
@@ -72,7 +72,7 @@ DIR* openDirectory(char* dirName) {
   DIR *dp = opendir(dirName);
   if (dp == NULL) {
     fprintf(stderr, "Couldn't open the given directory %s", dirName);
-    perror("");
+    perror(": ");
     exit(EXIT_FAILURE);
   }
   return dp;
@@ -100,7 +100,7 @@ int openFile(char* file) {
     // Retry on an EINTR and return failure otherwise
     if (errno != EINTR) {
       fprintf(stderr, "File %s failed to open", file);
-      perror("");
+      perror(": ");
       exit(EXIT_FAILURE);
     }
     fd = open(file, O_RDONLY);
@@ -114,7 +114,7 @@ void printFile(int fd, char* name) {
   // Return failure if lseek failed
   if (size == -1) {
     fprintf(stderr, "Failed to find the size of the file %s", name);
-    perror("");
+    perror(": ");
     close(fd);
     exit(EXIT_FAILURE);
   }
