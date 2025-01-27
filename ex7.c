@@ -54,7 +54,10 @@ int main(int argc, char** argv) {
     }
 
     // Open current file
-    int fd = openFile(strcat(argv[1], ep->d_name));
+    char *filename = "";
+    strcat(filename, argv[1]);
+    strcat(filename, ep->d_name);
+    int fd = openFile(filename);
 
     // Print the contents of the current file to standard out byte by byte
     printFile(fd, argv[1]);
