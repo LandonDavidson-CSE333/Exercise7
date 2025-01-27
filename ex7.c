@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 // Takes a directory name and returns a DIR* opened with POSIX opendir while handling errors
-DIR*
+DIR* openDirectory(char*);
 
 // Takes a string and returns true if it ends in .txt
 bool isTextFile(char*);
@@ -28,13 +28,8 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Requires one argument");
     return EXIT_FAILURE;
   }
-  // Check that given directory opens successfully
-  DIR *dp = opendir(argv[1]);
-  if (dp == NULL) {
-    fprintf(stderr, "Couldn't open the given directory %s", argv[1]);
-    perror("");
-    return EXIT_FAILURE;
-  }
+  // Open given directory
+  DIR *dp = openDirectory(argv[1]);
   // Check that dp actually has entries in it
   struct dirent *ep = readdir(dp);
   if (ep == NULL) {
@@ -62,6 +57,17 @@ int main(int argc, char** argv) {
   // Close the directory now that we are done and return a success
   closedir(dp);
   return EXIT_SUCCESS;
+}
+
+DIR* openDirectory(char* dirName) {
+  // Check that given directory opens successfully
+  DIR *dp = opendir(dirName);
+  if (dp == NULL) {
+    fprintf(stderr, "Couldn't open the given directory %s", dirName);
+    perror("");
+    exit(EXIT_FAILURE);
+  }
+  return dp;
 }
 
 bool isTextFile(char* src) {
