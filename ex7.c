@@ -36,9 +36,9 @@ int main(int argc, char** argv) {
   // Normalize directory name to end in a /
   size_t size = strlen(argv[1]);
   char dirName[NAME_BUFFER];
-  sprintf(dirName, "%s", argv[1]);
+  snprintf(dirName, NAME_BUFFER, "%s", argv[1]);
   if (argv[1][size - 1] != '/') {
-    sprintf(&dirName[size], "/");
+    snprintf(&dirName[size], 2,  "/");
   }
 
   // Open given directory
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
     // Open current file
     char filename[NAME_BUFFER + 255];
-    sprintf(filename, "%s%s", dirName, ep->d_name);
+    snprintf(filename, NAME_BUFFER + 255, "%s%s", dirName, ep->d_name);
     int fd = openFile(filename);
 
     // Print the contents of the current file to standard out byte by byte
