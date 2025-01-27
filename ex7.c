@@ -19,8 +19,8 @@ bool isTextFile(char*);
 // Takes a file name and opens it using POSIX calls, returns file descriptor
 int openFile(char*);
 
-// Print the contents of the given filename using POSIX read and handle errors
-void printFile(char*);
+// Print the contents of the given file descriptor using POSIX read and handle errors
+void printFile(int, char*);
 
 int main(int argc, char** argv) {
   // Requires on argument (A directory name)
@@ -28,8 +28,10 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Requires one argument");
     return EXIT_FAILURE;
   }
+
   // Open given directory
   DIR *dp = openDirectory(argv[1]);
+
   // Check that dp actually has entries in it
   struct dirent *ep = readdir(dp);
   if (ep == NULL) {
@@ -37,21 +39,22 @@ int main(int argc, char** argv) {
     perror("");
     return EXIT_FAILURE;
   }
+
   // Loop through all entries ending in ".txt" and print to stdout
   while(ep != NULL) {
     // Move to next entry if the file isn't a .txt
     if (!isTextFile(ep->d_name)) {
       continue;
     }
+
     // Open current file
     int fd = openFile(ep->d_name);
 
-    // Close current file and move to the next while handling errors
-    if (close(fd) == -1) {
-      fprintf(stderr, "Closing the file %s failed", ep->d_name);
-      perror("");
-      exit(EXIT_FAILURE);
-    }
+    // Print the contents of the current file to standard out byte by byte
+    printFile(fd, argv[1]);
+
+    // Close current file and move to the next
+    close(fd);
     ep = readdir(dp);
   }
   // Close the directory now that we are done and return a success
@@ -102,6 +105,36 @@ int openFile(char* file) {
   return fd;
 }
 
-void printFile(char* file) {
-  return;
+void printFile(int fd, char* name) {
+  // Get the size of the current file
+  int size = lseek(fd, 0, SEEK_END);
+  // Return failure if lseek failed
+  if (size == -1) {
+    fprintf(stderr, "Failed to find the size of the file %s", name);
+    perror("");
+    close(fd);
+    exit(EXIT_FAILURE);
+  }
+
+  // Read size number of bytes into buf and store the number read
+  char buf[size];
+  long bytesRead = read(fd, buf, size);
+
+  // On error return a failure
+  if (bytesRead == -1) {
+    fprintf(stderr, "Failed to read from file %s", name);
+    perror("");
+    close(fd);
+    exit(EXIT_FAILURE);
+  }
+  // return failure when read didn't read the whole file
+  if (bytesRead != size) {
+    fprintf(stderr, "couldn't read whole file %s", name);
+    perror("");
+    close(fd);
+    exit(EXIT_FAILURE);
+  }
+
+  // Print buf to stdout
+  printf(buf);
 }
