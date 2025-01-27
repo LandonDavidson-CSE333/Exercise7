@@ -107,7 +107,7 @@ int openFile(char* file) {
 
 void printFile(int fd, char* name) {
   // Get the size of the current file
-  int size = lseek(fd, 0, SEEK_END);
+  off_t size = lseek(fd, 0, SEEK_END);
   // Return failure if lseek failed
   if (size == -1) {
     fprintf(stderr, "Failed to find the size of the file %s", name);
